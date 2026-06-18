@@ -28,7 +28,7 @@ class PlacesScreen extends ConsumerWidget {
             },
           ),
         ],
-        surfaceTintColor: Theme.of(context).colorScheme.onPrimary,
+        backgroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
       body: PlacesList(places: userPlcaes),
     );
