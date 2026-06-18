@@ -1,16 +1,31 @@
+import 'package:favorite_places/models/place.dart';
+import 'package:favorite_places/providers/user_places.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AddPlaceScreen extends StatefulWidget {
+class AddPlaceScreen extends ConsumerStatefulWidget {
   const AddPlaceScreen({super.key});
 
   @override
-  State<AddPlaceScreen> createState() {
+  ConsumerState<AddPlaceScreen> createState() {
     return _AddPlaceScreenState();
   }
 }
 
-class _AddPlaceScreenState extends State<AddPlaceScreen> {
+class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
   final _formKey = GlobalKey<FormState>();
+  String? _enteredTitle;
+
+  void _addPlace() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    _formKey.currentState!.save();
+    final place = Place(title: _enteredTitle!);
+    ref.read(userPlacesProvider.notifier).addPlace(place);
+
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +48,13 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                   }
                   return null;
                 },
-                onSaved: (newValue) {},
+                onSaved: (value) {
+                  _enteredTitle = value;
+                },
               ),
               const SizedBox(height: 16),
               ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: _addPlace,
                 icon: const Icon(Icons.add),
                 label: const Text('Add Place'),
               ),
