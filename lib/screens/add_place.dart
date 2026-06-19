@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:favorite_places/models/place.dart';
 import 'package:favorite_places/providers/user_places.dart';
+import 'package:favorite_places/widgets/image_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,13 +18,14 @@ class AddPlaceScreen extends ConsumerStatefulWidget {
 class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
   final _formKey = GlobalKey<FormState>();
   String? _enteredTitle;
+  File? pickedImage;
 
   void _addPlace() {
-    if (!_formKey.currentState!.validate()) {
+    if (!_formKey.currentState!.validate()||pickedImage == null) {
       return;
     }
     _formKey.currentState!.save();
-    final place = Place(title: _enteredTitle!);
+    final place = Place(title: _enteredTitle!,image: pickedImage!);
     ref.read(userPlacesProvider.notifier).addPlace(place);
 
     Navigator.of(context).pop();
@@ -36,6 +40,7 @@ class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
         child: Form(
           key: _formKey,
           child: Column(
+            spacing: 16,
             children: [
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Title'),
@@ -52,7 +57,9 @@ class _AddPlaceScreenState extends ConsumerState<AddPlaceScreen> {
                   _enteredTitle = value;
                 },
               ),
-              const SizedBox(height: 16),
+              ImageInput(onPickImage: (image){
+                pickedImage = image;
+              },),
               ElevatedButton.icon(
                 onPressed: _addPlace,
                 icon: const Icon(Icons.add),
